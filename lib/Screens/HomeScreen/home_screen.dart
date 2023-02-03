@@ -319,7 +319,6 @@ class BackupList extends StatelessWidget {
       height: 35.h,
       child: GetX<GetXBackup>(builder: (_) {
         return CupertinoScrollbar(
-          isAlwaysShown: true,
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: _.backupData.length,
