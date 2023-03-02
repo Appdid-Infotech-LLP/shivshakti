@@ -9,13 +9,14 @@ class PrivacyPolicy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: GetX<GetXExtras>(
-        builder: (_) {
-          return WebView(
-            initialUrl: _.extras.value.privacyPolicy,
-          );
-        }
-      ),
+      child: GetX<GetXExtras>(builder: (_) {
+        return WebViewWidget(
+          controller: WebViewController()
+            ..loadRequest(Uri.parse(_.extras.value.privacyPolicy)),
+
+          // initialUrl: _.extras.value.privacyPolicy,
+        );
+      }),
     );
   }
 }

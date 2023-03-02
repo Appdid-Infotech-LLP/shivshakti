@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 
 String baseUrl = "https://shivshaktiapp.in/shivshaktinew/API/";
-// String baseUrl = "https://levegujar.com/shivshaktinew/API/";
 String slug = "zxcvbnm";
 
 class ApiCalls {
