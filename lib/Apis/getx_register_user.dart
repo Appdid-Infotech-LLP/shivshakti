@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -10,7 +11,7 @@ import 'package:shivshakti/Screens/InitialsScreens/otp_verification_screen.dart'
 import 'package:shivshakti/Services/api_calls.dart';
 import 'package:shivshakti/Services/getx_const_functions.dart';
 
-class GetXRegistration extends GetxController{
+class GetXRegistration extends GetxController {
   final call = ApiCalls();
   Rx<UserModel> userData = UserModel().obs;
   var otp = TextEditingController().obs;
@@ -23,14 +24,14 @@ class GetXRegistration extends GetxController{
   var confirmPass = TextEditingController().obs;
   GetXConstFunctions getDeviceId = Get.put(GetXConstFunctions());
 
-  registrationApiCall(context)async{
+  registrationApiCall(context) async {
     final prefs = await SharedPreferences.getInstance();
-    if(id.value.text != ''  && pass.value.text != '' && number.value.text != '' && name.value.text != '' && aadhar.value.text != '' && email.value.text != '' ){
-      if(confirmPass.value.text == pass.value.text){
-        getDeviceId.getDeviceId().then((value) async{
+    if (id.value.text != '' && pass.value.text != '' && number.value.text != '' && name.value.text != '' && aadhar.value.text != '' && email.value.text != '') {
+      if (confirmPass.value.text == pass.value.text) {
+        getDeviceId.getDeviceId().then((value) async {
           log("${id.value.text} ${pass.value.text} ${name.value.text} ${number.value.text} ${email.value.text} ${aadhar.value.text} ${prefs.getString("DeviceId")}");
           Fluttertoast.showToast(msg: "Registration in process...");
-          try{
+          try {
             log("-----");
             await call.commonApiCallResponse("registerLeader.php", {
               "slug": slug,
@@ -44,33 +45,32 @@ class GetXRegistration extends GetxController{
             }).then((value) {
               // log(value, name: "registrationApiCall");
               Fluttertoast.cancel();
-              if(jsonDecode(value)['status'] == 'success'){
+              if (jsonDecode(value)['status'] == 'success') {
                 prefs.setString("UserId", jsonDecode(value)['userid']);
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
                   return OtpScreen();
                 }));
-              }else if(jsonDecode(value)['status'] == 'failure'){
+              } else if (jsonDecode(value)['status'] == 'failure') {
                 Fluttertoast.showToast(msg: jsonDecode(value)['msg'], textColor: Colors.white, backgroundColor: Colors.red);
               }
             });
-          }catch(e){
-              log("Error at registrationApiCall----------------------------$e");
+          } catch (e) {
+            log("Error at registrationApiCall----------------------------$e");
           }
         });
-      }else{
+      } else {
         Fluttertoast.showToast(msg: "Password does not match");
       }
-
-    }else{
+    } else {
       Fluttertoast.showToast(msg: "Fill_Up Details");
     }
   }
 
-  Future otpVerification(context)async{
+  Future otpVerification(context) async {
     final prefs = await SharedPreferences.getInstance();
     Fluttertoast.showToast(msg: 'Verifying...');
-    log(prefs.getString("UserId").toString());
-    if(otp.value.text != ''){
+    log(prefs.getString("UserId").toString(), name: "USERID");
+    if (otp.value.text != '') {
       await call.commonApiCallResponse("verifyOtp.php", {
         "slug": slug,
         "aId": prefs.getString("UserId"),
@@ -78,16 +78,16 @@ class GetXRegistration extends GetxController{
         "aDeviceId": prefs.getString("DeviceId"),
       }).then((value) {
         log(value, name: "otpVerification");
-        if(jsonDecode(value)['status'] == 'success'){
+        if (jsonDecode(value)['status'] == 'success') {
           userData.value = userModelFromJson(jsonEncode(jsonDecode(value)['leaderdata']));
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
             return HomeScreen();
           }));
-        }else{
+        } else {
           Fluttertoast.showToast(msg: jsonDecode(value)['msg']);
         }
       });
-    }else{
+    } else {
       Fluttertoast.showToast(msg: 'Enter 6 Digit OTP');
     }
   }
